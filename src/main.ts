@@ -2,6 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 import * as admin from 'firebase-admin';
+
+import { Client } from 'pg';
+
 const serviceAccount = require('../../trimly-web-firebase-adminsdk-ftol6-2c04bf6513.json');
 
 // Initialize admin SDK for firebase service access
@@ -30,6 +33,27 @@ async function fireStoreQuery() {
   
   console.log(snapshot);
 }
+
+//Connection to Postgres sample
+const client = new Client({
+	user: 'admin',
+	password: 'admin123',
+	host: 'pixelmindgame.ddns.net',
+	port: '5432',
+	database: 'trimly',
+});
+
+async function postgresConn(){
+  await client.connect().then(() => {
+    console.log('Connected to PostgreSQL database');
+  })
+  .catch((err) => {
+    console.error('Error connecting to PostgreSQL database', err);
+  });
+} 
+
 bootstrap();
 fireStoreQuery();
+postgresConn();
+
 
