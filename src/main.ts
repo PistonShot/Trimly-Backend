@@ -68,15 +68,15 @@ async function postgresConn(){
 
 // Initialize admin SDK for firebase service access
 //For Development
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount), 
-//   projectId: 'trimly-web',
-// });
-//For production
 admin.initializeApp({
-  credential: admin.credential.applicationDefault(), 
+  credential: admin.credential.cert(serviceAccount), 
   projectId: 'trimly-web',
 });
+//For production
+// admin.initializeApp({
+//   credential: admin.credential.applicationDefault(), 
+//   projectId: 'trimly-web',
+// });
 
 bootstrap();
 // fireStoreQuery();

@@ -57,9 +57,5 @@ export class UserController {
       else{
         return response.status(402).json({error:'Specify all fields'})
       }
-     
-      
-      
-
     }
 }

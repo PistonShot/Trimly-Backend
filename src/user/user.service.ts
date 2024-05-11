@@ -22,9 +22,9 @@ export class UserService {
         
             // Access the data of the document
             const userData = new OwnerDto(documentSnapshot.data());
-            return userData;
+            return {data : userData};
         }else{
-            return {msg : 'User Not Found'};
+            return {error : 'User Not Found'};
         }
     }
 
