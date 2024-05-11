@@ -2,7 +2,7 @@ import { Controller, Get, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { AppService } from './app.service';
 
-@Controller('greetings')
+@Controller('firebase')
 export class AppController {
   constructor(private readonly appService : AppService) {}
 
