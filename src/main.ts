@@ -46,7 +46,7 @@ async function bootstrap() {
  //Enable firebase JWT token authorization
   // app.use(decodeIDToken);
   
-  await app.listen(4000);
+  await app.listen(8080);
 }
 
 //Connection to Postgres sample
