@@ -16,7 +16,7 @@ export class PostgresqlService {
       const query = "SELECT * FROM expenses_summary WHERE branch_id = $1::text";
       const res = await client.query(query, [branch_id]);
       console.log(formattedBranchNo);
-      return res.rows[0];
+      return res.rows;
       
     }
     
