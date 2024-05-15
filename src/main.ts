@@ -1,11 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import 'reflect-metadata';
+import "reflect-metadata";
 import * as admin from 'firebase-admin';
-
-import { Client } from 'pg';
+import pg from 'pg'
+const { Pool, Client } = pg
 import { NextFunction, Request, Response } from 'express';
+
+import { error } from 'console';
+
 
 const serviceAccount = require('../trimly-web-firebase-adminsdk-ftol6-2c04bf6513.json');
 
@@ -69,17 +72,20 @@ async function postgresConn(){
 // Initialize admin SDK for firebase service access
 //For Development
 // admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount), 
+//   credential: admin.credential.cert(serviceAccount),
+//   storageBucket: 'trimly-web.appspot.com', 
 //   projectId: 'trimly-web',
 // });
 //For production
 admin.initializeApp({
-  credential: admin.credential.applicationDefault(), 
+  credential: admin.credential.applicationDefault(),
+  storageBucket: 'trimly-web.appspot.com',  
   projectId: 'trimly-web',
 });
 
 bootstrap();
+postgresConn();
 // fireStoreQuery();
 // postgresConn();
-export default admin;
+export {admin, client}
 

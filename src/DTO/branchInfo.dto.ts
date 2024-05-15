@@ -13,6 +13,8 @@ export class BranchInfo{
     state: String;
     @ApiProperty()
     street : String;
+    @ApiProperty()
+    branchId : String
 
     constructor(branch : any){
         this.city = branch.city;
