@@ -18,6 +18,8 @@ export class OwnerDto{
     @ApiProperty()
     @IsPhoneNumber()
     phoneNum : string;
+    @ApiProperty()
+    profileImgUrl: string;
 
     constructor(data: any) {
         this.businessName = data.businessName;
@@ -28,6 +30,7 @@ export class OwnerDto{
         data.branchInfo.forEach((branch: any) => {
             this.branchInfo.push(new BranchInfo(branch));
         });
+        this.profileImgUrl = data.profileImgUrl as string;
     }
 
     // serialize(): any {

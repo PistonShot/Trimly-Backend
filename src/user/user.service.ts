@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import admin from '../main';
+import {admin} from '../main';
 import { OwnerDto } from 'src/DTO/user/owner.dto';
 import { CustomerDto } from 'src/DTO/user/customer.dto';
 import { BranchInfoBusiness } from 'src/DTO/branchInfo-business.dto';
-
+import { getDownloadURL, getStorage } from 'firebase-admin/storage';
 @Injectable()
 export class UserService {
     async  getOwner(email: string) : Promise<OwnerDto | Object>{
@@ -19,17 +19,16 @@ export class UserService {
         if (!querySnapshot.empty) {
             // If there are matching documents, access the first one (assuming username is unique)
             const documentSnapshot = querySnapshot.docs[0];
-        
+            
             // Access the data of the document
             const userData = new OwnerDto(documentSnapshot.data());
+            console.log(userData.profileImgUrl);
             return {data : userData};
         }else{
             return {error : 'User Not Found'};
         }
     }
-
     async  getCustomer(email: string) : Promise<CustomerDto | Object>{
-       
         const db = admin.firestore();
        // Get a reference to the 'UserModule' collection
         const collectionRef = db.collection('Customer');
@@ -62,7 +61,6 @@ export class UserService {
         .catch(error =>{
             response  = {error : "Failed to create owner. Error :" + error}
         })
-
         return response;
     }
 
@@ -77,6 +75,23 @@ export class UserService {
         .catch(error =>{
             response  = {error : "Failed to update business info. Error :" + error}
         })
+        return response;
+    }
+
+    async updateImage(uid: string): Promise<Object> {
+        const fileRef = getStorage().bucket('trimly-web.appspot.com').file(`profile/${uid}`);
+        const downloadUrl = await getDownloadURL(fileRef);
+        console.log(downloadUrl);
+        const db = admin.firestore();
+        const collectionRef = db.collection('UserModule');
+        let response : Object = {}
+        await collectionRef.doc(uid).update({profileImgUrl : downloadUrl}).then(()=>{
+            response = {success : 'Profile image updated in bucket and Firebase', profileImgUrl: downloadUrl}
+        })
+        .catch(error =>{
+            response  = {error : "Failed to update profile picture. UID does not exist. Error :" + error}
+        })
+
         return response;
     }
 }

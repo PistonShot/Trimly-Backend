@@ -58,4 +58,20 @@ export class UserController {
         return response.status(402).json({error:'Specify all fields'})
       }
     }
+
+    @Post('updateProfileUrl/:uid')
+    async updateProfileUrl(@Param('uid') uid : string) : Promise<Object>{
+      if(uid != null){
+          const response = await this.userService.updateImage(uid).then((response)=>{
+            try{  
+              return response;
+            }catch(error){
+              return {error : error}
+            }
+          })
+          return response;
+      }else{
+        return {error: 'Must specify UID'}
+      }
+    }
 }
