@@ -87,5 +87,6 @@ bootstrap();
 postgresConn();
 // fireStoreQuery();
 // postgresConn();
+
 export {admin, client}
 
