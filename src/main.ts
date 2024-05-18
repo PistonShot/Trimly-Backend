@@ -1,14 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import "reflect-metadata";
+import 'reflect-metadata';
 import * as admin from 'firebase-admin';
-import pg from 'pg'
-const { Pool, Client } = pg
+import pg from 'pg';
+const { Pool, Client } = pg;
 import { NextFunction, Request, Response } from 'express';
 
 import { error } from 'console';
-
+import { ValidationPipe } from '@nestjs/common';
 
 const serviceAccount = require('../trimly-web-firebase-adminsdk-ftol6-2c04bf6513.json');
 
@@ -22,7 +22,7 @@ async function decodeIDToken(req: Request, res: Response, next: NextFunction) {
       console.log(err);
       return res.status(401).json({ error: 'Invalid token' });
     }
-  }else{
+  } else {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   next();
@@ -32,61 +32,66 @@ async function decodeIDToken(req: Request, res: Response, next: NextFunction) {
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
-  .setTitle('Trimly API')
-  .setDescription('API for Trimly Web & Mobile App')
-  .setVersion('1.0')
-  .addTag('development')
-  .build();
+    .setTitle('Trimly API')
+    .setDescription('API for Trimly Web & Mobile App')
+    .setVersion('1.0')
+    .addTag('development')
+    .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
   //Setup CORS options for server (since token based authorization required)
   app.enableCors({
-    origin:true, //Same as any source
-    credentials:true,
- });
+    origin: true, //Same as any source
+    credentials: true,
+  });
 
- //Enable firebase JWT token authorization
+  //Enable firebase JWT token authorization
   // app.use(decodeIDToken);
-  
+
+  //enable validation for body and etc. globally
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true })); // whitelist truncate/removes fields that are not validated with decorator of the DTO
+
   await app.listen(8080);
 }
 
 //Connection to Postgres sample
 const client = new Client({
-	user: 'admin',
-	password: 'admin123',
-	host: 'pixelmindgame.ddns.net',
-	port: '5432',
-	database: 'trimly',
+  user: 'trimlydev',
+  password: 'developer#Nest',
+  host: 'trimlypostgres.postgres.database.azure.com',
+  port: '5432',
+  database: 'trimly',
+  ssl:true
 });
-async function postgresConn(){
-  await client.connect().then(() => {
-    console.log('Connected to PostgreSQL database');
-  })
-  .catch((err) => {
-    console.error('Error connecting to PostgreSQL database', err);
-  });
-} 
+async function postgresConn() {
+  await client
+    .connect()
+    .then(() => {
+      console.log('Connected to PostgreSQL database');
+    })
+    .catch((err) => {
+      console.error('Error connecting to PostgreSQL database', err);
+    });
+}
 
 // Initialize admin SDK for firebase service access
 //For Development
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-//   storageBucket: 'trimly-web.appspot.com', 
-//   projectId: 'trimly-web',
-// });
-//For production
 admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-  storageBucket: 'trimly-web.appspot.com',  
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: 'trimly-web.appspot.com',
   projectId: 'trimly-web',
 });
+//For production
+// admin.initializeApp({
+//   credential: admin.credential.applicationDefault(),
+//   storageBucket: 'trimly-web.appspot.com',
+//   projectId: 'trimly-web',
+// });
 
 bootstrap();
 postgresConn();
 // fireStoreQuery();
 // postgresConn();
 
-export {admin, client}
-
+export { admin, client };
