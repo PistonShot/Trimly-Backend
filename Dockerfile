@@ -1,5 +1,5 @@
 # Base image
-FROM node:lts-slim
+FROM node:latest
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -13,10 +13,12 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+# RUN apt-get update -y && apt-get install -y openssl
 # Copy the .env and .env.development files
 # COPY .env .env.development ./
 
 # Creates a "dist" folder with the production build
+RUN npx prisma generate dev
 RUN npm run build
 
 # Expose the port on which the app will run
