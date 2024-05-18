@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BranchInfo } from './DTO/branchInfo.dto';
 import { BranchInfoBusiness } from './DTO/branchInfo-business.dto';
-import { admin, client} from './main';
+import { admin} from './main';
 
 
 @Injectable()
