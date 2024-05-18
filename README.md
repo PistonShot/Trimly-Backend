@@ -75,3 +75,10 @@ Nest is [MIT licensed](LICENSE).
 ## Extra Reference
 1. For refering Request and Response 
 https://expressjs.com/en/api.html#req
+
+
+## Dev note :
+1. Use prisma to generate table and define models for database PostgreSql
+  - `npx prisma migrate dev` - will create migration for dev and generate tables in the database 
+  - `npx prisma studio` - will run a studio that will act like a GUI for you to view the tables in your db
+  -
