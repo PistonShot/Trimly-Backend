@@ -56,24 +56,27 @@ async function bootstrap() {
 }
 
 //Connection to Postgres sample
-const client = new Client({
+// const client = new Client({
+//   user: 'trimlydev',
+//   password: 'developer#Nest',
+//   host: 'trimlypostgres.postgres.database.azure.com',
+//   port: '5432',
+//   database: 'trimly',
+//   ssl: true,
+// });
+const pool = new Pool({
   user: 'trimlydev',
   password: 'developer#Nest',
   host: 'trimlypostgres.postgres.database.azure.com',
   port: '5432',
   database: 'trimly',
-  ssl:true
+  ssl: true,
 });
-async function postgresConn() {
-  await client
-    .connect()
-    .then(() => {
-      console.log('Connected to PostgreSQL database');
-    })
-    .catch((err) => {
-      console.error('Error connecting to PostgreSQL database', err);
-    });
-}
+
+pool.on('error', (err, client) => {
+  console.error('Unexpected error on idle client', err);
+  process.exit(-1);
+});
 
 // Initialize admin SDK for firebase service access
 //For Development
@@ -90,8 +93,7 @@ admin.initializeApp({
 });
 
 bootstrap();
-postgresConn();
 // fireStoreQuery();
 // postgresConn();
 
-export { admin, client };
+export { admin, pool };
