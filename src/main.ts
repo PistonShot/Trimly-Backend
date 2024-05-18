@@ -70,7 +70,6 @@ const pool = new Pool({
   host: 'trimlypostgres.postgres.database.azure.com',
   port: '5432',
   database: 'trimly',
-  ssl: true,
 });
 
 pool.on('error', (err, client) => {
