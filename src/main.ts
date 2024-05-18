@@ -95,5 +95,4 @@ admin.initializeApp({
 bootstrap();
 // fireStoreQuery();
 // postgresConn();
-
 export { admin, pool };
