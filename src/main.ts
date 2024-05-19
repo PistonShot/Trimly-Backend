@@ -79,17 +79,17 @@ pool.on('error', (err, client) => {
 
 // Initialize admin SDK for firebase service access
 //For Development
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-//   storageBucket: 'trimly-web.appspot.com',
-//   projectId: 'trimly-web',
-// });
-//For production
 admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
+  credential: admin.credential.cert(serviceAccount),
   storageBucket: 'trimly-web.appspot.com',
   projectId: 'trimly-web',
 });
+//For production
+// admin.initializeApp({
+//   credential: admin.credential.applicationDefault(),
+//   storageBucket: 'trimly-web.appspot.com',
+//   projectId: 'trimly-web',
+// });
 
 bootstrap();
 // fireStoreQuery();

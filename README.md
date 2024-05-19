@@ -81,4 +81,4 @@ https://expressjs.com/en/api.html#req
 1. Use prisma to generate table and define models for database PostgreSql
   - `npx prisma migrate dev` - will create migration for dev and generate tables in the database 
   - `npx prisma studio` - will run a studio that will act like a GUI for you to view the tables in your db
-  -
+  -`npx prisma db pull` - to pull new db configurations from database
