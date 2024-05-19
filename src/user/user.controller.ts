@@ -5,13 +5,14 @@ import { OwnerDto } from 'src/DTO/user/owner.dto';
 import { ApiBody } from '@nestjs/swagger';
 import { validate } from 'class-validator';
 import { response } from 'express';
+import { BranchInfoBusiness } from 'src/DTO/branchInfo-business.dto';
 @Controller('user')
 export class UserController {
     constructor(private readonly userService : UserService){}
 
     @Get('ownerData/:email')
     async getOwner(@Param('email') email : string): Promise<OwnerDto | Object>{
-      let data = await this.userService.getOwner(email) as OwnerDto | Object
+      let data = await this.userService.getOwner(email);
       return data;
     }
 
@@ -23,34 +24,13 @@ export class UserController {
     
     @Post('createOwner/:uid')
     @ApiBody({type: [OwnerDto]})
-    async createOwner(@Body() body: any , @Param('uid') uid : string ) : Promise<Object>{
-      try {
-        const ownerDto = new OwnerDto(body)
-        const check = await validate(ownerDto);
-        console.log(check)
-
-        if(check.values.length == 0){
-        try {
-            await this.userService.createOwner(ownerDto, uid);
-            return { success: true };
-        } catch (error) {
-          return { error: 'Error updating to FireStore'};
-        }
-        }else{
-          return { error: 'Error creating owner , wrong attributes in ',
-          validateError : check.values
-        };
-        }
-      } catch (error) {
-        response.status(HttpStatus.BAD_REQUEST).send("Invalid body properties");
-        return;
-      }
-
-      
+    async createOwner(@Body() body: OwnerDto , @Param('uid') uid : string ){
+       const result =  await this.userService.createOwner(body, uid);
+       return result
     }
 
     @Post('updateBusinessInfo/:uid')
-    async updatebusinessInfo(@Body() body: any , @Param('uid') uid : string ) : Promise<Object>{
+    async updatebusinessInfo(@Body() body: BranchInfoBusiness, @Param('uid') uid : string ) : Promise<Object>{
       if(body.businessName != null && body.branchInfo != null){
         try {
           await this.userService.updateBusinessInfo(body, uid)
@@ -64,18 +44,15 @@ export class UserController {
       }
     }
 
+    //This POST request must be invoked upon success firebase auth registration
+    // Purpose is to update Firestore Record and PostgreSQL Record
+    
     @Post('updateProfileUrl/:uid')
     async updateProfileUrl(@Param('uid') uid : string) : Promise<Object>{
-      if(uid != null){
-          const response = await this.userService.updateImage(uid).then((response)=>{
-            try{  
-              return response;
-            }catch(error){
-              return {error : error}
-            }
-          })
+      if(uid){
+          const response = this.userService.updateImage(uid)
           return response;
-      }else{
+      } else{
         response.status(400).send('Bad Request');
         return {error: 'Must specify UID'}
       }

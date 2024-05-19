@@ -12,7 +12,7 @@ export class AppService {
   getGoodBye():string{
     return 'Goodbye!'
   }
-  async getBranchInfo(uid : string): Promise<BranchInfoBusiness | Object> {
+  async getBranchInfo(uid : string) {
     const db = admin.firestore();
     const collectionRef = db.collection('UserModule');
     const docRef =  collectionRef.doc(uid);
@@ -23,8 +23,7 @@ export class AppService {
           if (data) {
               const branchInfo = data.branchInfo as Array<BranchInfo>; // Replace "fieldName" with the name of the field you want to retrieve
               const businessName = data.businessName;
-              const branchInfoBusiness = new BranchInfoBusiness({branchInfo : branchInfo, businessName: businessName})
-              return branchInfoBusiness ;
+              return {branchInfo : branchInfo, businessName: businessName} ;
           } else {
               console.log('Document does not contain any data');
               return { error : "Document dose not contain the data"}
