@@ -1,4 +1,11 @@
-import { Controller, Get, Param, Req } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Param,
+  Query,
+  Req,
+} from '@nestjs/common';
 import { PostgresqlService } from './postgresql.service';
 import { Request } from 'express';
 @Controller('postgresql')
@@ -34,5 +41,51 @@ export class PostgresqlController {
       endYearMonth,
     );
     return data;
+  }
+
+  @Get('currentReservation/:uid/:branchNo')
+  async getCurrentReservation(
+    @Param('uid') uid: string,
+    @Param('branchNo') branchNo: string,
+  ) {
+    const data = this.postgresqlService.getCurrentReservation(uid, branchNo);
+    return data;
+  }
+
+  @Get('customerByStatus/:uid/:branchNo')
+  async getCustomerByStatus(
+    @Param('uid') uid: string,
+    @Param('branchNo') branchNo: string,
+    @Query('status') status: string,
+  ) {
+    try {
+      const array = JSON.parse(decodeURIComponent(status));
+      console.log(array);
+      const data = this.postgresqlService.getCustomerByStatus(
+        uid,
+        branchNo,
+        array,
+      );
+      return data;
+    } catch (error) {
+      throw new BadRequestException(
+        'Send status as query param and as an array of string and makesure it is encoded with encodedUriComponent',
+      );
+    }
+  }
+
+  @Get('revenueInfo/:uid/:branchNo/:start/:end')
+  async getRevenueInfo(
+    @Param('uid') uid: string,
+    @Param('branchNo') branchNo: string,
+    @Param('start') start: string,
+    @Param('end') end: string,
+  ) {
+    try {
+      console.log(start)
+      return this.postgresqlService.getRevenueInfo(uid, branchNo, start, end);
+    } catch (error) {
+      throw error;
+    }
   }
 }
