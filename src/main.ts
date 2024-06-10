@@ -45,6 +45,7 @@ async function bootstrap() {
     origin: true, //Same as any source
     credentials: true,
   });
+  
 
   //Enable firebase JWT token authorization
   // app.use(decodeIDToken);

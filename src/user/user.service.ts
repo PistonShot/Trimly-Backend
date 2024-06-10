@@ -5,8 +5,8 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { admin } from '../main';
-import { OwnerDto } from 'src/DTO/user/owner.dto';
-import { CustomerDto } from 'src/DTO/user/customer.dto';
+import { OwnerDto } from 'src/user/dto/owner.dto';
+import { CustomerDto } from 'src/user/dto/customer.dto';
 import { BranchInfoBusiness } from 'src/DTO/branchInfo-business.dto';
 import { getDownloadURL, getStorage } from 'firebase-admin/storage';
 import { error } from 'console';

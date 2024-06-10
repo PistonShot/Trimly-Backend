@@ -12,6 +12,7 @@ export class AppService {
   getGoodBye():string{
     return 'Goodbye!'
   }
+  
   async getBranchInfo(uid : string) {
     const db = admin.firestore();
     const collectionRef = db.collection('UserModule');

@@ -27,6 +27,22 @@ export class PostgresqlController {
     return data;
   }
 
+  @Get('expensesCategory/:uid/:branchNo')
+  async getExpensesCategory(
+    @Param('uid') uid: string,
+    @Param('branchNo') branchNo: string,
+  ) {
+    try {
+      const data = await this.postgresqlService.getExpensesCategory(
+        uid,
+        branchNo,
+      );
+      return data;
+    } catch (error) {
+      throw new BadRequestException('Invalid uid format');
+    }
+  }
+
   @Get('monthlyUsers/:uid/:branchNo/:startYearMonth/:endYearMonth')
   async getMonthlyUsers(
     @Param('uid') uid: string,
@@ -82,8 +98,20 @@ export class PostgresqlController {
     @Param('end') end: string,
   ) {
     try {
-      console.log(start)
+      console.log(start);
       return this.postgresqlService.getRevenueInfo(uid, branchNo, start, end);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Get('reservationList/:uid/:branchNo')
+  async getReservations(
+    @Param('uid') uid: string,
+    @Param('branchNo') branchNo: string,
+  ) {
+    try {
+      return this.postgresqlService.getLatestReservations(uid, branchNo);
     } catch (error) {
       throw error;
     }

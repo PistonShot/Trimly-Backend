@@ -61,9 +61,12 @@ export class PostgresqlService {
     const client = await pool.connect();
     const formattedBranchNo = String(branchNo).padStart(2, '0');
     const branch_id = `${uid}_${formattedBranchNo}`;
-    const query = `select reservation_info.reservation_id,customer_info.name, reservation_info.reservation, reservation_info.status 
-      from reservation_info LEFT JOIN customer_info ON reservation_info.customer_uid=customer_info.customer_uid
-      where reservation_info.branch_id= $1::text;`;
+    const query = `SELECT 
+      reservation_info.reservation_id,customer_info.name, reservation_info.reservation, reservation_info.status 
+    FROM 
+      reservation_info LEFT JOIN customer_info ON reservation_info.customer_uid=customer_info.customer_uid
+    WHERE 
+      reservation_info.branch_id= $1::text;`;
     const res = await client.query(query, [branch_id]);
     client.release();
     return res.rows.length == 0
@@ -142,7 +145,7 @@ export class PostgresqlService {
       const res = await client.query(query, [branch_id, dateStart, dateEnd]);
 
       client.release();
-      console.log(res.rows.length)
+      console.log(res.rows.length);
       return res.rows.length == 0
         ? { msg: 'No Reservation made with this branch' }
         : res.rows;
@@ -151,5 +154,48 @@ export class PostgresqlService {
         'Use appropriate date type (YYYY-MM-DD) and format or check other parameters',
       );
     }
+  }
+
+  async getExpensesCategory(uid: string, branchNo: string) {
+    const client = await pool.connect();
+    const formattedBranchNo = String(branchNo).padStart(2, '0');
+    const branch_id = `${uid}_${formattedBranchNo}`;
+
+    const query = `
+    SELECT 
+      COUNT(expenses_summary.type) , expenses_summary.type 
+    FROM 
+      expenses_summary
+    WHERE 
+      expenses_summary.branch_id =$1::text
+    GROUP BY 
+      expenses_summary.type;
+    `;
+    const res = await client.query(query, [branch_id]);
+
+    client.release();
+    return res.rows.length == 0
+      ? { msg: 'No expenses found for this branch' }
+      : res.rows;
+  }
+
+  async getTopSpending(uid: string, branchNo: string) {}
+
+  async getLatestReservations(uid: string, branchNo: string) {
+    const client = await pool.connect();
+    const formattedBranchNo = String(branchNo).padStart(2, '0');
+    const branch_id = `${uid}_${formattedBranchNo}`;
+    const query = `
+    SELECT *
+    FROM reservation_info
+    WHERE (status = 'pending' OR status = 'confirmed') AND branch_id = $1::text
+    ORDER BY (reservation->>'bookTime')::timestamp
+    DESC`;
+    const res = await client.query(query, [branch_id]);
+    client.release();
+
+    return res.rows.length == 0
+    ? { msg: 'No reservations found for this branch' }
+    : res.rows;
   }
 }
