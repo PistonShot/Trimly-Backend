@@ -84,7 +84,6 @@ export class PostgresqlService {
         const query = `SELECT count(customer_uid) FROM reservation_info
       where branch_id=$1::text and status=$2::text`;
         const row = await client.query(query, [branch_id, value]);
-        console.log(row.rows[0].count);
         return { [value]: row.rows[0].count };
       }),
     );
@@ -145,7 +144,6 @@ export class PostgresqlService {
       const res = await client.query(query, [branch_id, dateStart, dateEnd]);
 
       client.release();
-      console.log(res.rows.length);
       return res.rows.length == 0
         ? { msg: 'No Reservation made with this branch' }
         : res.rows;
@@ -181,21 +179,39 @@ export class PostgresqlService {
 
   async getTopSpending(uid: string, branchNo: string) {}
 
-  async getLatestReservations(uid: string, branchNo: string) {
-    const client = await pool.connect();
-    const formattedBranchNo = String(branchNo).padStart(2, '0');
-    const branch_id = `${uid}_${formattedBranchNo}`;
-    const query = `
-    SELECT *
-    FROM reservation_info
-    WHERE (status = 'pending' OR status = 'confirmed') AND branch_id = $1::text
-    ORDER BY (reservation->>'bookTime')::timestamp
-    DESC`;
-    const res = await client.query(query, [branch_id]);
-    client.release();
+  async getLatestReservations(
+    uid: string,
+    branchNo: string,
+    start: string,
+    end: string,
+  ) {
+    try {
+      const client = await pool.connect();
+      const formattedBranchNo = String(branchNo).padStart(2, '0');
+      const branch_id = `${uid}_${formattedBranchNo}`;
+      const query = `
+  SELECT reservation_info.reservation , customer_info.name , reservation_info.status
+  FROM reservation_info
+  LEFT JOIN customer_info
+  ON reservation_info.customer_uid = customer_info.customer_uid
+  WHERE (reservation_info.status = 'pending' OR reservation_info.status = 'confirmed') 
+  AND reservation_info.branch_id = $1::text
+  AND ((reservation_info.reservation->>'bookTime')::timestamp >= $2::Date
+  AND (reservation_info.reservation->>'bookTime')::timestamp <= $3::Date )
+  ORDER BY (reservation_info.reservation->>'bookTime')::timestamp DESC;`;
 
-    return res.rows.length == 0
-    ? { msg: 'No reservations found for this branch' }
-    : res.rows;
+      const res = await client.query(query, [
+        branch_id,
+        new Date(start),
+        new Date(end),
+      ]);
+      client.release();
+
+      return res.rows.length == 0
+        ? { msg: 'No reservations found for this branch' }
+        : res.rows;
+    } catch (error) {
+      throw new BadRequestException('Invalid Date format');
+    }
   }
 }

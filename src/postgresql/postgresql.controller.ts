@@ -76,7 +76,6 @@ export class PostgresqlController {
   ) {
     try {
       const array = JSON.parse(decodeURIComponent(status));
-      console.log(array);
       const data = this.postgresqlService.getCustomerByStatus(
         uid,
         branchNo,
@@ -98,20 +97,26 @@ export class PostgresqlController {
     @Param('end') end: string,
   ) {
     try {
-      console.log(start);
       return this.postgresqlService.getRevenueInfo(uid, branchNo, start, end);
     } catch (error) {
       throw error;
     }
   }
 
-  @Get('reservationList/:uid/:branchNo')
+  @Get('reservationList/:uid/:branchNo/:start/:end')
   async getReservations(
     @Param('uid') uid: string,
     @Param('branchNo') branchNo: string,
+    @Param('start') start: string,
+    @Param('end') end: string,
   ) {
     try {
-      return this.postgresqlService.getLatestReservations(uid, branchNo);
+      return this.postgresqlService.getLatestReservations(
+        uid,
+        branchNo,
+        start,
+        end,
+      );
     } catch (error) {
       throw error;
     }
