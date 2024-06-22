@@ -11,7 +11,7 @@ model branch_outlet {
   owner_uid            String?                @db.VarChar(255)
   branch_id            String                 @id @db.VarChar(255)
   customer_transaction customer_transaction[]
-  expenses_summary     expenses_summary[]
+  expenses_summary     expenses_summary[]     @ignore
   reservation_info     reservation_info[]
 }
 
