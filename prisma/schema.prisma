@@ -11,7 +11,7 @@ model branch_outlet {
   owner_uid            String?                @db.VarChar(255)
   branch_id            String                 @id @db.VarChar(255)
   customer_transaction customer_transaction[]
-  expenses_summary     expenses_summary[]     @ignore
+  expenses_summary     expenses_summary[]
   reservation_info     reservation_info[]
 }
 
@@ -19,6 +19,7 @@ model customer_info {
   customer_uid         String                 @id @db.VarChar(255)
   email                String?                @unique @db.VarChar(255)
   phone_no             String?                @db.VarChar(255)
+  name                 String?                @db.VarChar(255)
   customer_transaction customer_transaction[]
   reservation_info     reservation_info[]
 }
@@ -55,6 +56,16 @@ model reservation_info {
   reservation    Json
   branch_id      String?        @db.VarChar(255)
   status         String?        @db.VarChar(255)
+  barberName     String?        @db.VarChar(255)
   branch_outlet  branch_outlet? @relation(fields: [branch_id], references: [branch_id], onDelete: NoAction, onUpdate: NoAction)
   customer_info  customer_info? @relation(fields: [customer_uid], references: [customer_uid], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model branch_staff {
+  UID         String  @id @db.Uuid
+  Name        String  @db.VarChar(255)
+  Status      String  @db.VarChar(255)
+  Quote       String? @db.VarChar(255)
+  Expertise   String? @db.VarChar(255)
+  SocialMedia Json?
 }

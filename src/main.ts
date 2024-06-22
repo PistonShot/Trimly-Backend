@@ -30,7 +30,9 @@ async function decodeIDToken(req: Request, res: Response, next: NextFunction) {
 
 //App engine and configuration (middleware should be appended in here)
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    rawBody : true
+  });
   const config = new DocumentBuilder()
     .setTitle('Trimly API')
     .setDescription('API for Trimly Web & Mobile App')
@@ -79,7 +81,7 @@ pool.on('error', (err, client) => {
 });
 
 // Initialize admin SDK for firebase service access
-//For Development
+// For Development
 // admin.initializeApp({
 //   credential: admin.credential.cert(serviceAccount),
 //   storageBucket: 'trimly-web.appspot.com',

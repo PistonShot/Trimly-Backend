@@ -190,7 +190,7 @@ export class PostgresqlService {
       const formattedBranchNo = String(branchNo).padStart(2, '0');
       const branch_id = `${uid}_${formattedBranchNo}`;
       const query = `
-  SELECT reservation_info.reservation , customer_info.name , reservation_info.status
+  SELECT reservation_info.reservation , customer_info.name , reservation_info.status, reservation_info."barberName"
   FROM reservation_info
   LEFT JOIN customer_info
   ON reservation_info.customer_uid = customer_info.customer_uid
@@ -211,6 +211,7 @@ export class PostgresqlService {
         ? { msg: 'No reservations found for this branch' }
         : res.rows;
     } catch (error) {
+      console.log(error)
       throw new BadRequestException('Invalid Date format');
     }
   }
